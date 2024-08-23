@@ -16,7 +16,7 @@ router.get("/users/:id", getUser);
 
 router.post("/users", createUser);
 
-router.patch("/users/:id", updateUser);
+router.put("/users/:id", updateUser);
 
 router.delete("/users/:id", deleteUser);
 
