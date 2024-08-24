@@ -53,7 +53,7 @@ export const createUser = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `user created successfully` });
+    res.status(200).json({ message: `Usuario creado exitosamente` });
   } catch (err) {
     res.status(500).json({ message: "se produjo un error" });
   }
@@ -61,12 +61,7 @@ export const createUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { first_name, last_name, email } = req.body;
-
-  if (!id) {
-    res.status(400).json({ message: "faltan campos obligatorios" });
-    return;
-  }
+  const { first_name = null, last_name = null, email = null } = req.body;
 
   try {
     const result = await sequelize.query(
@@ -82,7 +77,7 @@ export const updateUser = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `update user` });
+    res.status(200).json({ message: `Usuario actualizado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -111,7 +106,7 @@ export const changePassword = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `change password` });
+    res.status(200).json({ message: `Contraseña cambiada exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -119,9 +114,6 @@ export const changePassword = async (req, res) => {
 
 export const deleteUser = (req, res) => {
   const { id } = req.params;
-  if (!id) {
-    res.status(400).json({ message: "missing required fields" });
-  }
 
   try {
     const result = sequelize.query(`EXEC usp_del_users @user_id = :id`, {
@@ -131,7 +123,7 @@ export const deleteUser = (req, res) => {
       type: sequelize.QueryTypes.RAW,
     });
 
-    res.status(200).json({ message: `delete user` });
+    res.status(200).json({ message: `Usuario desactivado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }

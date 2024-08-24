@@ -32,7 +32,7 @@ export const createOrderWithDetails = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "Order created successfully" });
+    res.status(200).json({ message: "Pedido creado exitosamente" });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -40,7 +40,7 @@ export const createOrderWithDetails = async (req, res) => {
 
 export const updateOrderHeader = async (req, res) => {
   const { id } = req.params;
-  const { address, phone_number } = req.body;
+  const { address = null, phone_number = null } = req.body;
 
   try {
     const result = await sequelize.query(
@@ -55,7 +55,7 @@ export const updateOrderHeader = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "update order header" });
+    res.status(200).json({ message: "Pedido actualizado exitosamente" });
   } catch (error) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -77,7 +77,7 @@ export const updateOrderStatus = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: "update order status" });
+    res.status(200).json({ message: "Pedido cancelado exitosamente" });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }

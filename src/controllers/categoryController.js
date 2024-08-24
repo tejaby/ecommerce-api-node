@@ -52,7 +52,7 @@ export const createCategory = async (req, res) => {
       }
     );
 
-    res.json({ message: `create category` });
+    res.json({ message: `Categoría creada exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -60,7 +60,7 @@ export const createCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name = null } = req.body;
 
   if (!id) {
     res.status(400).json({ error: "faltan campos obligatorios" });
@@ -78,7 +78,7 @@ export const updateCategory = async (req, res) => {
       }
     );
 
-    res.json({ message: `update category` });
+    res.json({ message: `Categoría actualizada exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -86,10 +86,6 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
   const { id } = req.params;
-
-  if (!id) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
-  }
 
   try {
     const result = await sequelize.query(
@@ -102,7 +98,7 @@ export const deleteCategory = async (req, res) => {
       }
     );
 
-    res.json({ message: `deleted category successfully` });
+    res.json({ message: `Categoría desactivada exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }

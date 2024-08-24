@@ -21,6 +21,6 @@ router.put("/users/:id", updateUser);
 
 router.put("/users/:id/password", changePassword);
 
-router.delete("/users/:id", deleteUser);
+router.put("/users/:id/deactivate", deleteUser);
 
 export default router;

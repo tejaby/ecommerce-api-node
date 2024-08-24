@@ -12,7 +12,7 @@ router.post("/orders", createOrderWithDetails);
 
 router.put("/orders/:id", updateOrderHeader);
 
-router.put("/orders/:id", updateOrderStatus);
+router.put("/orders/:id/cancel", updateOrderStatus);
 
 
 export default router;

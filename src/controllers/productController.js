@@ -35,22 +35,19 @@ export const getProduct = async (req, res) => {
 export const createproduct = async (req, res) => {
   const {
     name,
-    description,
-    brand,
+    description = null,
+    brand = null,
     price,
     stock,
-    image,
+    image = null,
     user_id,
     category_id,
   } = req.body;
 
   if (
     !name ||
-    !description ||
-    !brand ||
     !price ||
     !stock ||
-    !image ||
     !user_id ||
     !category_id
   ) {
@@ -76,7 +73,7 @@ export const createproduct = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `create product` });
+    res.status(200).json({ message: `Producto creado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -88,7 +85,14 @@ export const updateProduct = async (req, res) => {
   if (!id) {
     res.status(400).json({ error: "faltan campos obligatorios" });
   }
-  const { name, description, brand, price, stock, image } = req.body;
+  const {
+    name = null,
+    description = null,
+    brand = null,
+    price = null,
+    stock = null,
+    image = null,
+  } = req.body;
 
   try {
     const result = await sequelize.query(
@@ -107,7 +111,7 @@ export const updateProduct = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `update product` });
+    res.status(200).json({ message: `Producto actualizado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }
@@ -131,7 +135,7 @@ export const deleteProduct = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `delete product` });
+    res.status(200).json({ message: `Producto desactivado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "se produjo un error" });
   }

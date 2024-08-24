@@ -18,6 +18,6 @@ router.post("/categories", createCategory);
 
 router.put("/categories/:id", updateCategory);
 
-router.delete("/categories/:id", deleteCategory);
+router.put("/categories/:id/deactivate", deleteCategory);
 
 export default router;
