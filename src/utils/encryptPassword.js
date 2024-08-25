@@ -10,3 +10,12 @@ export const encryptPassword = async (password) => {
     throw new Error(`Error encriptando la contraseña: ${err}`);
   }
 };
+
+export const comparePassword = async (password, hashedPassword) => {
+  try {
+    const result = await bcrypt.compare(password, hashedPassword);
+    return result;
+  } catch (err) {
+    throw new Error(`Error comparando la contraseña: ${err}`);
+  }
+};

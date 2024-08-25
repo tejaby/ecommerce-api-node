@@ -15,11 +15,11 @@ router.get("/users", listUsers);
 
 router.get("/users/:id", getUser);
 
-router.post("/users", createUser);
+// router.post("/users", createUser);
 
 router.put("/users/:id", updateUser);
 
-router.put("/users/:id/password", changePassword);
+router.put("/users/:id/ ", changePassword);
 
 router.put("/users/:id/deactivate", deleteUser);
 
