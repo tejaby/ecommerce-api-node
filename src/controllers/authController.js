@@ -43,7 +43,7 @@ export const login = async (req, res) => {
       { user_id: result[0].user_id, role_id: result[0].role_id },
       JWT_SECRET,
       {
-        expiresIn: "15m",
+        expiresIn: "24h",
       }
     );
 
@@ -63,7 +63,7 @@ export const register = async (req, res) => {
       { user_id: result.user.user_id, role_id: result.user.role_id },
       JWT_SECRET,
       {
-        expiresIn: "15m",
+        expiresIn: "24h",
       }
     );
 

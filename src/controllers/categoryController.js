@@ -33,9 +33,10 @@ export const getCategory = async (req, res) => {
 };
 
 export const createCategory = async (req, res) => {
-  const { name, user_id } = req.body;
+  const { user_id } = req.user;
+  const { name } = req.body;
 
-  if (!name || !user_id) {
+  if (!name) {
     res.status(400).json({ error: "faltan campos obligatorios" });
     return;
   }
@@ -61,10 +62,6 @@ export const createCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   const { id } = req.params;
   const { name = null } = req.body;
-
-  if (!id) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
-  }
 
   try {
     const result = await sequelize.query(

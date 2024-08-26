@@ -1,16 +1,10 @@
 import sequelize from "../db.js";
 
 export const createOrderWithDetails = async (req, res) => {
-  const { address, phone_number, total_amount, user_id, order_details } =
-    req.body;
+  const { user_id } = req.user;
+  const { address, phone_number, total_amount, order_details } = req.body;
 
-  if (
-    !address ||
-    !phone_number ||
-    !total_amount ||
-    !user_id ||
-    !order_details
-  ) {
+  if (!address || !phone_number || !total_amount || !order_details) {
     res.status(400).json({ error: "faltan campos obligatorios" });
     return;
   }
@@ -34,6 +28,7 @@ export const createOrderWithDetails = async (req, res) => {
 
     res.status(200).json({ message: "Pedido creado exitosamente" });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "se produjo un error" });
   }
 };

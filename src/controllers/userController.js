@@ -60,15 +60,16 @@ export const createUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const { id } = req.params;
+  const { user_id } = req.user;
   const { first_name = null, last_name = null, email = null } = req.body;
+
 
   try {
     const result = await sequelize.query(
-      `EXEC usp_upd_users @user_id = :id, @first_name = :first_name, @last_name = :last_name, @email = :email`,
+      `EXEC usp_upd_users @user_id = :user_id, @first_name = :first_name, @last_name = :last_name, @email = :email`,
       {
         replacements: {
-          id,
+          user_id,
           first_name,
           last_name,
           email,
@@ -84,7 +85,7 @@ export const updateUser = async (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
-  const { id } = req.params;
+  const { user_id } = req.user;
   const { password } = req.body;
 
   if (!password) {
@@ -96,10 +97,10 @@ export const changePassword = async (req, res) => {
     const passwordHash = await encryptPassword(password);
 
     const result = sequelize.query(
-      `EXEC usp_upd_users @user_id = :id, @password = :passwordHash`,
+      `EXEC usp_upd_users @user_id = :user_id, @password = :passwordHash`,
       {
         replacements: {
-          id,
+          user_id,
           passwordHash,
         },
         type: sequelize.QueryTypes.RAW,
@@ -113,12 +114,12 @@ export const changePassword = async (req, res) => {
 };
 
 export const deleteUser = (req, res) => {
-  const { id } = req.params;
+  const { user_id } = req.user;
 
   try {
-    const result = sequelize.query(`EXEC usp_del_users @user_id = :id`, {
+    const result = sequelize.query(`EXEC usp_del_users @user_id = :user_id`, {
       replacements: {
-        id,
+        user_id,
       },
       type: sequelize.QueryTypes.RAW,
     });

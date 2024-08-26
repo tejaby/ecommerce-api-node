@@ -33,6 +33,8 @@ export const getProduct = async (req, res) => {
 };
 
 export const createproduct = async (req, res) => {
+  const { user_id } = req.user;
+
   const {
     name,
     description = null,
@@ -40,17 +42,10 @@ export const createproduct = async (req, res) => {
     price,
     stock,
     image = null,
-    user_id,
     category_id,
   } = req.body;
 
-  if (
-    !name ||
-    !price ||
-    !stock ||
-    !user_id ||
-    !category_id
-  ) {
+  if (!name || !price || !stock || !category_id) {
     res.status(400).json({ error: "faltan campos obligatorios" });
     return;
   }
@@ -82,9 +77,6 @@ export const createproduct = async (req, res) => {
 export const updateProduct = async (req, res) => {
   const { id } = req.params;
 
-  if (!id) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
-  }
   const {
     name = null,
     description = null,
@@ -120,10 +112,6 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
-  if (!id) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
-  }
-
   try {
     const result = await sequelize.query(
       `EXEC psp_del_products @product_id = :id`,
@@ -134,6 +122,8 @@ export const deleteProduct = async (req, res) => {
         type: sequelize.QueryTypes.RAW,
       }
     );
+
+    console.log(result)
 
     res.status(200).json({ message: `Producto desactivado exitosamente` });
   } catch (err) {

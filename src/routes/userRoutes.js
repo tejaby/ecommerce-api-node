@@ -16,14 +16,14 @@ const router = Router();
 
 router.get("/users", authMiddleware, adminMiddleware, listUsers);
 
-router.get("/users/:id", authMiddleware, getUser);
+router.get("/users/:id", authMiddleware, adminMiddleware, getUser);
 
 // router.post("/users", createUser);
 
-router.put("/users/:id", authMiddleware, updateUser);
+router.put("/users", authMiddleware, updateUser);
 
-router.put("/users/:id/password", authMiddleware, changePassword);
+router.put("/users/password", authMiddleware, changePassword);
 
-router.put("/users/:id/deactivate", authMiddleware, deleteUser);
+router.put("/users/deactivate", authMiddleware, deleteUser);
 
 export default router;
