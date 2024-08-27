@@ -8,7 +8,7 @@ export const listProducts = async (req, res) => {
 
     res.status(200).json({ data: result });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
@@ -28,7 +28,7 @@ export const getProduct = async (req, res) => {
 
     res.status(200).json({ data: result });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
@@ -46,11 +46,41 @@ export const createproduct = async (req, res) => {
   } = req.body;
 
   if (!name || !price || !stock || !category_id) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
+    res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
 
   try {
+    const [product] = await sequelize.query(
+      `SELECT * FROM products WHERE name = :name`,
+      {
+        replacements: {
+          name,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (product) {
+      res.status(400).json({ error: "El producto ya existe" });
+      return;
+    }
+
+    const [category] = await sequelize.query(
+      `SELECT * FROM categories WHERE category_id = :category_id`,
+      {
+        replacements: {
+          category_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!category) {
+      res.status(400).json({ error: "La categoría no existe" });
+      return;
+    }
+
     const result = await sequelize.query(
       `EXEC psp_ins_products @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image, @user_id = :user_id, @category_id = :category_id`,
       {
@@ -70,7 +100,7 @@ export const createproduct = async (req, res) => {
 
     res.status(200).json({ message: `Producto creado exitosamente` });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
@@ -87,6 +117,36 @@ export const updateProduct = async (req, res) => {
   } = req.body;
 
   try {
+    const [product] = await sequelize.query(
+      `SELECT * FROM products WHERE name = :name`,
+      {
+        replacements: {
+          name,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (product) {
+      res.status(400).json({ error: "El producto ya existe" });
+      return;
+    }
+
+    const [getProduct] = await sequelize.query(
+      `SELECT * FROM products WHERE product_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!getProduct) {
+      res.status(404).json({ error: "El producto no existe" });
+      return;
+    }
+
     const result = await sequelize.query(
       `EXEC psp_upd_products @product_id = :id, @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image`,
       {
@@ -105,7 +165,7 @@ export const updateProduct = async (req, res) => {
 
     res.status(200).json({ message: `Producto actualizado exitosamente` });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
@@ -113,6 +173,16 @@ export const deleteProduct = async (req, res) => {
   const { id } = req.params;
 
   try {
+    const [product] = await sequelize.query(
+      `SELECT * FROM products WHERE product_id =:id`,
+      { replacements: { id }, type: sequelize.QueryTypes.SELECT }
+    );
+
+    if (!product) {
+      res.status(404).json({ error: "El producto no existe" });
+      return;
+    }
+
     const result = await sequelize.query(
       `EXEC psp_del_products @product_id = :id`,
       {
@@ -123,10 +193,8 @@ export const deleteProduct = async (req, res) => {
       }
     );
 
-    console.log(result)
-
     res.status(200).json({ message: `Producto desactivado exitosamente` });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };

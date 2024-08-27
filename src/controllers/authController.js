@@ -19,7 +19,7 @@ export const login = async (req, res) => {
   }
 
   try {
-    const result = await sequelize.query(
+    const [result] = await sequelize.query(
       `EXEC usp_get_user_by_email @email = :email`,
       {
         replacements: { email },
@@ -27,36 +27,75 @@ export const login = async (req, res) => {
       }
     );
 
-    if (!result[0]) {
-      res.status(404).json({ message: "usuario no encontrado" });
+    if (!result) {
+      res.status(404).json({ error: "Usuario no encontrado" });
       return;
     }
 
-    const passwordMatch = await comparePassword(password, result[0].password);
+    const passwordMatch = await comparePassword(password, result.password);
 
     if (!passwordMatch) {
-      res.status(400).json({ error: "la contraseña es incorrecta" });
+      res.status(400).json({ error: "La contraseña es incorrecta" });
       return;
     }
 
     const token = jwt.sign(
-      { user_id: result[0].user_id, role_id: result[0].role_id },
+      { user_id: result.user_id, role_id: result.role_id },
       JWT_SECRET,
       {
         expiresIn: "24h",
       }
     );
 
-    res
-      .status(200)
-      .json({ message: "inicio de sesión exitoso", user: result[0], token });
+    res.status(200).json({
+      message: "Inicio de sesión exitoso",
+      user: result,
+      access: token,
+    });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
 export const register = async (req, res) => {
+  const { first_name, last_name, email, password, role_id } = req.body;
+
+  if (!first_name || !last_name || !email || !password || !role_id) {
+    res.status(400).json({ error: "Faltan campos obligatorios" });
+    return;
+  }
+
   try {
+    const [user] = await sequelize.query(
+      `SELECT * FROM users WHERE email = :email`,
+      {
+        replacements: {
+          email: email,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (user) {
+      res.status(400).json({ error: "Ya existe un usuario con ese correo" });
+      return;
+    }
+
+    const [role] = await sequelize.query(
+      `SELECT * FROM roles WHERE role_id = :role_id`,
+      {
+        replacements: {
+          role_id: role_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!role) {
+      res.status(400).json({ error: "El rol no existe" });
+      return;
+    }
+
     const result = await createUser(req, res);
 
     const token = jwt.sign(
@@ -69,7 +108,7 @@ export const register = async (req, res) => {
 
     res.status(200).json({ ...result, token });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 

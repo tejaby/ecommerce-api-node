@@ -5,11 +5,35 @@ export const createOrderWithDetails = async (req, res) => {
   const { address, phone_number, total_amount, order_details } = req.body;
 
   if (!address || !phone_number || !total_amount || !order_details) {
-    res.status(400).json({ error: "faltan campos obligatorios" });
+    res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
 
   try {
+    const products = [];
+
+    for (const order of order_details) {
+      const [product] = await sequelize.query(
+        `SELECT * FROM products WHERE product_id = :product_id AND price = :price`,
+        {
+          replacements: {
+            product_id: order.product_id,
+            price: order.price,
+          },
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if (product) {
+        products.push(product);
+      }
+    }
+
+    if (products.length != order_details.length) {
+      res.status(400).json({ error: "Uno o más productos no son válidos" });
+      return;
+    }
+
     const serializedOrderDetails = JSON.stringify(order_details);
 
     const result = await sequelize.query(
@@ -29,15 +53,38 @@ export const createOrderWithDetails = async (req, res) => {
     res.status(200).json({ message: "Pedido creado exitosamente" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
 export const updateOrderHeader = async (req, res) => {
+  const { user_id } = req.user;
   const { id } = req.params;
   const { address = null, phone_number = null } = req.body;
 
   try {
+    const [order] = await sequelize.query(
+      `SELECT * FROM orders WHERE order_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!order) {
+      res.status(404).json({ error: "No se encontró el pedido" });
+      return;
+    }
+
+    if (order.user_id != user_id) {
+      res
+        .status(403)
+        .json({ error: "No tienes permisos para actualizar este pedido" });
+      return;
+    }
+
     const result = await sequelize.query(
       `EXEC usp_upd_orders @address = :address, @phone_number = :phone_number, @order_id = :id`,
       {
@@ -52,15 +99,43 @@ export const updateOrderHeader = async (req, res) => {
 
     res.status(200).json({ message: "Pedido actualizado exitosamente" });
   } catch (error) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
 
 export const updateOrderStatus = async (req, res) => {
+  const { user_id } = req.user;
   const { id } = req.params;
   const { state } = req.body;
 
+  const validStates = ["cancelled", "pending"];
+  if (!state || !validStates.includes(state)) {
+    return res.status(400).json({ error: "Estado no válido o faltante" });
+  }
+
   try {
+    const [order] = await sequelize.query(
+      `SELECT * FROM orders WHERE order_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!order) {
+      res.status(404).json({ error: "No se encontró el pedido" });
+      return;
+    }
+
+    if (order.user_id != user_id) {
+      res
+        .status(403)
+        .json({ error: "No tienes permisos para actualizar este pedido" });
+      return;
+    }
+
     const result = await sequelize.query(
       `EXEC usp_upd_orders @state = :state, @order_id = :id`,
       {
@@ -74,6 +149,6 @@ export const updateOrderStatus = async (req, res) => {
 
     res.status(200).json({ message: "Pedido cancelado exitosamente" });
   } catch (err) {
-    res.status(500).json({ error: "se produjo un error" });
+    res.status(500).json({ error: "Se produjo un error" });
   }
 };
