@@ -14,7 +14,7 @@ export const createOrderWithDetails = async (req, res) => {
 
     for (const order of order_details) {
       const [product] = await sequelize.query(
-        `SELECT * FROM products WHERE product_id = :product_id AND price = :price`,
+        `EXEC usp_get_product_by_user_price @product_id = :product_id, @price = :price`,
         {
           replacements: {
             product_id: order.product_id,
@@ -64,7 +64,7 @@ export const updateOrderHeader = async (req, res) => {
 
   try {
     const [order] = await sequelize.query(
-      `SELECT * FROM orders WHERE order_id = :id`,
+      `EXEC usp_get_orders @order_id = :id`,
       {
         replacements: {
           id,
@@ -115,7 +115,7 @@ export const updateOrderStatus = async (req, res) => {
 
   try {
     const [order] = await sequelize.query(
-      `SELECT * FROM orders WHERE order_id = :id`,
+      `EXEC usp_get_orders @order_id = :id`,
       {
         replacements: {
           id,

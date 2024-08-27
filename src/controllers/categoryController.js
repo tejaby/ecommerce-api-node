@@ -43,7 +43,7 @@ export const createCategory = async (req, res) => {
 
   try {
     const [category] = await sequelize.query(
-      `SELECT * FROM categories WHERE name = :name`,
+      `EXEC csp_get_category_by_name @name = :name`,
       {
         replacements: {
           name,
@@ -80,7 +80,7 @@ export const updateCategory = async (req, res) => {
 
   try {
     const [category] = await sequelize.query(
-      `SELECT * FROM categories WHERE name = :name`,
+      `EXEC csp_get_category_by_name @name = :name`,
       {
         replacements: {
           name,
@@ -95,7 +95,7 @@ export const updateCategory = async (req, res) => {
     }
 
     const [getCategory] = await sequelize.query(
-      `SELECT * FROM categories WHERE category_id = :id`,
+      `EXEC csp_get_categories @category_id = :id`,
       {
         replacements: {
           id,
@@ -131,7 +131,7 @@ export const deleteCategory = async (req, res) => {
 
   try {
     const [category] = await sequelize.query(
-      `SELECT * FROM categories WHERE category_id = :id`,
+      `EXEC csp_get_categories @category_id = :id`,
       {
         replacements: {
           id,

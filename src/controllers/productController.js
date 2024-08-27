@@ -52,7 +52,7 @@ export const createproduct = async (req, res) => {
 
   try {
     const [product] = await sequelize.query(
-      `SELECT * FROM products WHERE name = :name`,
+      `EXEC csp_get_product_by_name @name = :name`,
       {
         replacements: {
           name,
@@ -67,7 +67,7 @@ export const createproduct = async (req, res) => {
     }
 
     const [category] = await sequelize.query(
-      `SELECT * FROM categories WHERE category_id = :category_id`,
+      `EXEC csp_get_categories @category_id = :category_id`,
       {
         replacements: {
           category_id,
@@ -118,7 +118,7 @@ export const updateProduct = async (req, res) => {
 
   try {
     const [product] = await sequelize.query(
-      `SELECT * FROM products WHERE name = :name`,
+      `EXEC csp_get_product_by_name @name = :name`,
       {
         replacements: {
           name,
@@ -133,7 +133,7 @@ export const updateProduct = async (req, res) => {
     }
 
     const [getProduct] = await sequelize.query(
-      `SELECT * FROM products WHERE product_id = :id`,
+      `EXEC psp_get_products @product_id = :id`,
       {
         replacements: {
           id,
@@ -174,7 +174,7 @@ export const deleteProduct = async (req, res) => {
 
   try {
     const [product] = await sequelize.query(
-      `SELECT * FROM products WHERE product_id =:id`,
+      `EXEC psp_get_products @product_id = :id`,
       { replacements: { id }, type: sequelize.QueryTypes.SELECT }
     );
 

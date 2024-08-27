@@ -61,7 +61,7 @@ export const updateUser = async (req, res) => {
   try {
     if (email) {
       const [user] = await sequelize.query(
-        `SELECT * FROM users WHERE email = :email`,
+        `EXEC usp_get_user_by_email @email = :email`,
         {
           replacements: {
             email,
@@ -71,9 +71,7 @@ export const updateUser = async (req, res) => {
       );
 
       if (user) {
-        res
-          .status(400)
-          .json({ error: "Ya existe un usuario con ese correo" });
+        res.status(400).json({ error: "Ya existe un usuario con ese correo" });
       }
     }
 
@@ -106,15 +104,12 @@ export const changePassword = async (req, res) => {
   }
 
   try {
-    const [user] = await sequelize.query(
-      `SELECT * FROM users WHERE user_id = :user_id`,
-      {
-        replacements: {
-          user_id,
-        },
-        type: sequelize.QueryTypes.SELECT,
-      }
-    );
+    const [user] = await sequelize.query(`EXEC usp_get_users @user_id = :user_id`, {
+      replacements: {
+        user_id,
+      },
+      type: sequelize.QueryTypes.SELECT,
+    });
 
     if (!user) {
       res.status(404).json({ error: "Usuario no encontrado" });

@@ -67,7 +67,7 @@ export const register = async (req, res) => {
 
   try {
     const [user] = await sequelize.query(
-      `SELECT * FROM users WHERE email = :email`,
+      `EXEC usp_get_user_by_email @email = :email`,
       {
         replacements: {
           email: email,
@@ -82,10 +82,10 @@ export const register = async (req, res) => {
     }
 
     const [role] = await sequelize.query(
-      `SELECT * FROM roles WHERE role_id = :role_id`,
+      `EXEC usp_get_roles @role_id = :role_id`,
       {
         replacements: {
-          role_id: role_id,
+          role_id,
         },
         type: sequelize.QueryTypes.SELECT,
       }
