@@ -13,9 +13,9 @@ import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 const router = Router();
 
-router.get("/products", listProducts);
+router.get("/products", authMiddleware, listProducts);
 
-router.get("/products/:id", getProduct);
+router.get("/products/:id", authMiddleware, getProduct);
 
 router.post("/products", authMiddleware, adminMiddleware, createproduct);
 

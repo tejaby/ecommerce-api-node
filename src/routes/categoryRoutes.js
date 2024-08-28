@@ -13,9 +13,9 @@ import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 
 const router = Router();
 
-router.get("/categories", listCategories);
+router.get("/categories", authMiddleware, listCategories);
 
-router.get("/categories/:id", getCategory);
+router.get("/categories/:id", authMiddleware, getCategory);
 
 router.post("/categories", authMiddleware, adminMiddleware, createCategory);
 
