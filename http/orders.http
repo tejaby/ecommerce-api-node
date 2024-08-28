@@ -1,0 +1,32 @@
+### create an order
+POST http://localhost:3000/api/orders
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+    "address": null,
+    "phone_number": null,
+    "total_amount": null,
+    "order_details": [
+        {"quantity": null, "price": null, "product_id": null}
+    ]
+}
+
+### update an order
+PUT http://localhost:3000/api/orders/1
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+    "address": null,
+    "phone_number": null
+}
+
+### delete an order
+PUT http://localhost:3000/api/orders/1/cancel
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+    "state": null
+}

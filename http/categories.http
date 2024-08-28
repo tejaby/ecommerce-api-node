@@ -1,0 +1,27 @@
+### list all categories
+GET http://localhost:3000/api/categories
+
+### get a category
+GET http://localhost:3000/api/categories/1
+
+### create a category
+POST http://localhost:3000/api/categories
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+  "name": null
+}
+
+### update a category
+PUT http://localhost:3000/api/categories/1
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+  "name": null
+}
+
+### delete a category
+PUT http://localhost:3000/api/categories/1/deactivate
+Authorization: Bearer {{}}

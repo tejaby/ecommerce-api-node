@@ -1,0 +1,32 @@
+### list all users
+GET http://localhost:3000/api/users
+Authorization: Bearer {{}}
+
+### get a user
+GET http://localhost:3000/api/users/1
+Authorization: Bearer {{}}
+
+### update a user
+PUT http://localhost:3000/api/users
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+    "first_name": null,
+    "last_name": null,
+    "email": null
+}
+
+### change password
+PUT http://localhost:3000/api/users/password
+Content-Type: application/json
+Authorization: Bearer {{}}
+
+{
+    "password": null,
+    "new_password": null
+}
+
+### delete a user
+PUT http://localhost:3000/api/users/deactivate
+Authorization: Bearer {{}}
