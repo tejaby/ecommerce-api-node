@@ -2,9 +2,16 @@ import sequelize from "../db.js";
 
 export const createOrderWithDetails = async (req, res) => {
   const { user_id } = req.user;
-  const { address, phone_number, total_amount, order_details } = req.body;
+  const { address, phone_number, total_amount, order_details, state_id } =
+    req.body;
 
-  if (!address || !phone_number || !total_amount || !order_details) {
+  if (
+    !address ||
+    !phone_number ||
+    !total_amount ||
+    !order_details ||
+    !state_id
+  ) {
     res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
@@ -36,14 +43,30 @@ export const createOrderWithDetails = async (req, res) => {
 
     const serializedOrderDetails = JSON.stringify(order_details);
 
+    const [state] = await sequelize.query(
+      `EXEC ssp_get_states @state_id = :state_id`,
+      {
+        replacements: {
+          state_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!state) {
+      res.status(400).json({ error: "El estado no existe" });
+      return;
+    }
+
     const result = await sequelize.query(
-      `EXEC usp_create_order_with_details @address = :address, @phone_number = :phone_number, @total_amount = :total_amount, @user_id = :user_id, @order_details = :order_details`,
+      `EXEC usp_create_order_with_details @address = :address, @phone_number = :phone_number, @total_amount = :total_amount, @user_id = :user_id, @order_details = :order_details, @state_id = :state_id`,
       {
         replacements: {
           address,
           phone_number,
           total_amount,
           user_id,
+          state_id,
           order_details: serializedOrderDetails,
         },
         type: sequelize.QueryTypes.RAW,
@@ -106,11 +129,11 @@ export const updateOrderHeader = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
   const { user_id } = req.user;
   const { id } = req.params;
-  const { state } = req.body;
+  const { state_id } = req.body;
 
-  const validStates = ["cancelled", "pending"];
-  if (!state || !validStates.includes(state)) {
-    return res.status(400).json({ error: "Estado no válido o faltante" });
+  if (!state_id) {
+    res.status(400).json({ error: "Falta el estado" });
+    return;
   }
 
   try {
@@ -136,11 +159,26 @@ export const updateOrderStatus = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
-      `EXEC usp_upd_orders @state = :state, @order_id = :id`,
+    const [state] = await sequelize.query(
+      `EXEC ssp_get_states @state_id = :state_id`,
       {
         replacements: {
-          state,
+          state_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!state) {
+      res.status(400).json({ error: "El estado no existe" });
+      return;
+    }
+
+    const result = await sequelize.query(
+      `EXEC usp_upd_orders @state_id = :state_id, @order_id = :id`,
+      {
+        replacements: {
+          state_id,
           id,
         },
         type: sequelize.QueryTypes.RAW,

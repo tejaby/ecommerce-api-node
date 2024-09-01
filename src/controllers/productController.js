@@ -43,9 +43,10 @@ export const createproduct = async (req, res) => {
     stock,
     image = null,
     category_id,
+    state_id,
   } = req.body;
 
-  if (!name || !price || !stock || !category_id) {
+  if (!name || !price || !stock || !category_id || !state_id) {
     res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
@@ -82,7 +83,7 @@ export const createproduct = async (req, res) => {
     }
 
     const result = await sequelize.query(
-      `EXEC psp_ins_products @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image, @user_id = :user_id, @category_id = :category_id`,
+      `EXEC psp_ins_products @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image, @user_id = :user_id, @category_id = :category_id, @state_id = :state_id`,
       {
         replacements: {
           name,
@@ -93,6 +94,7 @@ export const createproduct = async (req, res) => {
           image,
           user_id,
           category_id,
+          state_id,
         },
         type: sequelize.QueryTypes.RAW,
       }
@@ -169,8 +171,15 @@ export const updateProduct = async (req, res) => {
   }
 };
 
-export const deleteProduct = async (req, res) => {
+export const updateProductState = async (req, res) => {
   const { id } = req.params;
+
+  const { state_id } = req.body;
+
+  if (!state_id) {
+    res.status(400).json({ error: "Falta el estado" });
+    return;
+  }
 
   try {
     const [product] = await sequelize.query(
@@ -184,10 +193,11 @@ export const deleteProduct = async (req, res) => {
     }
 
     const result = await sequelize.query(
-      `EXEC psp_del_products @product_id = :id`,
+      `EXEC psp_upd_product_status @product_id = :id, @state_id = :state_id`,
       {
         replacements: {
           id,
+          state_id,
         },
         type: sequelize.QueryTypes.RAW,
       }

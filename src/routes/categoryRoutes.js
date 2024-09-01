@@ -5,7 +5,7 @@ import {
   getCategory,
   createCategory,
   updateCategory,
-  deleteCategory,
+  updateCategoryState,
 } from "../controllers/categoryController.js";
 
 import { authMiddleware } from "../middlewares/auth.js";
@@ -22,10 +22,10 @@ router.post("/categories", authMiddleware, adminMiddleware, createCategory);
 router.put("/categories/:id", authMiddleware, adminMiddleware, updateCategory);
 
 router.put(
-  "/categories/:id/deactivate",
+  "/categories/:id/state",
   authMiddleware,
   adminMiddleware,
-  deleteCategory
+  updateCategoryState
 );
 
 export default router;

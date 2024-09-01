@@ -58,9 +58,17 @@ export const login = async (req, res) => {
 };
 
 export const register = async (req, res) => {
-  const { first_name, last_name, email, password, role_id } = req.body;
+  const { first_name, last_name, email, password, role_id, state_id } =
+    req.body;
 
-  if (!first_name || !last_name || !email || !password || !role_id) {
+  if (
+    !first_name ||
+    !last_name ||
+    !email ||
+    !password ||
+    !role_id ||
+    !state_id
+  ) {
     res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
@@ -96,6 +104,21 @@ export const register = async (req, res) => {
       return;
     }
 
+    const [state] = await sequelize.query(
+      `EXEC ssp_get_states @state_id = :state_id`,
+      {
+        replacements: {
+          state_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!state) {
+      res.status(400).json({ error: "El estado no existe" });
+      return;
+    }
+
     const result = await createUser(req, res);
 
     const token = jwt.sign(
@@ -108,6 +131,7 @@ export const register = async (req, res) => {
 
     res.status(200).json({ ...result, token });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Se produjo un error" });
   }
 };

@@ -29,13 +29,14 @@ export const getUser = async (req, res) => {
 };
 
 export const createUser = async (req, res) => {
-  const { first_name, last_name, email, password, role_id } = req.body;
+  const { first_name, last_name, email, password, role_id, state_id } =
+    req.body;
 
   try {
     const passwordHash = await encryptPassword(password);
 
     const [result] = await sequelize.query(
-      `EXEC usp_ins_users @first_name = :first_name, @last_name = :last_name, @email = :email, @password = :passwordHash, @role_id = :role_id`,
+      `EXEC usp_ins_users @first_name = :first_name, @last_name = :last_name, @email = :email, @password = :passwordHash, @role_id = :role_id, @state_id = :state_id`,
       {
         replacements: {
           first_name,
@@ -43,6 +44,7 @@ export const createUser = async (req, res) => {
           email,
           passwordHash,
           role_id,
+          state_id,
         },
         type: sequelize.QueryTypes.RAW,
       }
@@ -104,12 +106,15 @@ export const changePassword = async (req, res) => {
   }
 
   try {
-    const [user] = await sequelize.query(`EXEC usp_get_users @user_id = :user_id`, {
-      replacements: {
-        user_id,
-      },
-      type: sequelize.QueryTypes.SELECT,
-    });
+    const [user] = await sequelize.query(
+      `EXEC usp_get_users @user_id = :user_id`,
+      {
+        replacements: {
+          user_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
 
     if (!user) {
       res.status(404).json({ error: "Usuario no encontrado" });
@@ -142,13 +147,20 @@ export const changePassword = async (req, res) => {
   }
 };
 
-export const deleteUser = (req, res) => {
+export const updateUserState = (req, res) => {
   const { user_id } = req.user;
+  const { state_id } = req.body;
+
+  if (!state_id) {
+    res.status(400).json({ error: "Falta el estado" });
+    return;
+  }
 
   try {
-    const result = sequelize.query(`EXEC usp_del_users @user_id = :user_id`, {
+    const result = sequelize.query(`EXEC usp_upd_user_status @user_id = :user_id, @state_id = :state_id`, {
       replacements: {
         user_id,
+        state_id,
       },
       type: sequelize.QueryTypes.RAW,
     });

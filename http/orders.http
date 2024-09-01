@@ -7,6 +7,7 @@ Authorization: Bearer {{}}
     "address": null,
     "phone_number": null,
     "total_amount": null,
+    "state_id": null,
     "order_details": [
         {"quantity": null, "price": null, "product_id": null}
     ]
@@ -22,11 +23,11 @@ Authorization: Bearer {{}}
     "phone_number": null
 }
 
-### delete an order
-PUT http://localhost:3000/api/orders/1/cancel
+### change order status
+PUT http://localhost:3000/api/orders/1/state
 Content-Type: application/json
 Authorization: Bearer {{}}
 
 {
-    "state": null
+    "state_id": null
 }

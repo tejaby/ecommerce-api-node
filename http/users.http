@@ -27,6 +27,10 @@ Authorization: Bearer {{}}
     "new_password": null
 }
 
-### delete a user
-PUT http://localhost:3000/api/users/deactivate
+### change user status
+PUT http://localhost:3000/api/users/state
 Authorization: Bearer {{}}
+
+{
+    "state_id": null
+}

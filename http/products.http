@@ -16,7 +16,8 @@ Authorization: Bearer {{}}
   "price": null,
   "stock": null,
   "image": null,
-  "category_id": null 
+  "category_id": null,
+  "state_id": null
 }
 
 ### update a product
@@ -33,6 +34,10 @@ Authorization: Bearer {{}}
   "image": null
 }
 
-### delete a product
-PUT http://localhost:3000/api/products/1/deactivate
+### change product status
+PUT http://localhost:3000/api/products/1/state
 Authorization: Bearer {{}}
+
+{
+  "state_id": null
+}

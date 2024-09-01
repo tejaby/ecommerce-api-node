@@ -14,6 +14,6 @@ router.post("/orders", authMiddleware, createOrderWithDetails);
 
 router.put("/orders/:id", authMiddleware, updateOrderHeader);
 
-router.put("/orders/:id/cancel", authMiddleware, updateOrderStatus);
+router.put("/orders/:id/state", authMiddleware, updateOrderStatus);
 
 export default router;

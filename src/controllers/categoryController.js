@@ -34,9 +34,9 @@ export const getCategory = async (req, res) => {
 
 export const createCategory = async (req, res) => {
   const { user_id } = req.user;
-  const { name } = req.body;
+  const { name, state_id } = req.body;
 
-  if (!name) {
+  if (!name || !state_id) {
     res.status(400).json({ error: "Faltan campos obligatorios" });
     return;
   }
@@ -58,11 +58,12 @@ export const createCategory = async (req, res) => {
     }
 
     const result = await sequelize.query(
-      `EXEC csp_ins_categories @name = :name, @user_id = :user_id`,
+      `EXEC csp_ins_categories @name = :name, @user_id = :user_id, @state_id = :state_id`,
       {
         replacements: {
           name,
           user_id,
+          state_id,
         },
         type: sequelize.QueryTypes.RAW,
       }
@@ -126,8 +127,14 @@ export const updateCategory = async (req, res) => {
   }
 };
 
-export const deleteCategory = async (req, res) => {
+export const updateCategoryState = async (req, res) => {
   const { id } = req.params;
+  const { state_id } = req.body;
+
+  if (!state_id) {
+    res.status(400).json({ error: "Falta el estado" });
+    return;
+  }
 
   try {
     const [category] = await sequelize.query(
@@ -146,10 +153,11 @@ export const deleteCategory = async (req, res) => {
     }
 
     const result = await sequelize.query(
-      `EXEC csp_del_categories @category_id = :id`,
+      `EXEC csp_upd_categorie_status @category_id = :id, @state_id = :state_id`,
       {
         replacements: {
           id,
+          state_id,
         },
         type: sequelize.QueryTypes.RAW,
       }

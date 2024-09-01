@@ -5,7 +5,7 @@ import {
   getUser,
   createUser,
   updateUser,
-  deleteUser,
+  updateUserState,
   changePassword,
 } from "../controllers/userController.js";
 
@@ -24,6 +24,6 @@ router.put("/users", authMiddleware, updateUser);
 
 router.put("/users/password", authMiddleware, changePassword);
 
-router.put("/users/deactivate", authMiddleware, deleteUser);
+router.put("/users/state", authMiddleware, updateUserState);
 
 export default router;

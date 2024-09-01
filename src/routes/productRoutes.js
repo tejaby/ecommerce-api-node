@@ -5,7 +5,7 @@ import {
   getProduct,
   createproduct,
   updateProduct,
-  deleteProduct,
+  updateProductState,
 } from "../controllers/productController.js";
 
 import { authMiddleware } from "../middlewares/auth.js";
@@ -22,10 +22,10 @@ router.post("/products", authMiddleware, adminMiddleware, createproduct);
 router.put("/products/:id", authMiddleware, adminMiddleware, updateProduct);
 
 router.put(
-  "/products/:id/deactivate",
+  "/products/:id/state",
   authMiddleware,
   adminMiddleware,
-  deleteProduct
+  updateProductState
 );
 
 export default router;
