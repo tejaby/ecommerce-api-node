@@ -39,13 +39,9 @@ export const login = async (req, res) => {
       return;
     }
 
-    const token = jwt.sign(
-      { user_id: result.user_id, role_id: result.role_id },
-      JWT_SECRET,
-      {
-        expiresIn: "24h",
-      }
-    );
+    const token = jwt.sign({ user_id: result.user_id }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
     res.status(200).json({
       message: "Inicio de sesión exitoso",
@@ -121,13 +117,9 @@ export const register = async (req, res) => {
 
     const result = await createUser(req, res);
 
-    const token = jwt.sign(
-      { user_id: result.user.user_id, role_id: result.user.role_id },
-      JWT_SECRET,
-      {
-        expiresIn: "24h",
-      }
-    );
+    const token = jwt.sign({ user_id: result.user.user_id }, JWT_SECRET, {
+      expiresIn: "24h",
+    });
 
     res.status(200).json({ ...result, token });
   } catch (err) {
