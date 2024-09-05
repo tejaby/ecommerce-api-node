@@ -1,13 +1,44 @@
 import sequelize from "../db.js";
 
 export const listProducts = async (req, res) => {
-  try {
-    const result = await sequelize.query(`EXEC psp_list_products`, {
-      type: sequelize.QueryTypes.SELECT,
-    });
+  const { category } = req.query;
 
+  try {
+    if (!category) {
+      const result = await sequelize.query(`EXEC psp_list_products`, {
+        type: sequelize.QueryTypes.SELECT,
+      });
+      res.status(200).json({ data: result });
+      return;
+    }
+
+    const [categoryResult] = await sequelize.query(
+      `EXEC csp_get_category_by_name @name = :category`,
+      {
+        replacements: {
+          category,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!categoryResult) {
+      res.status(400).json({ error: "La categoría no existe" });
+      return;
+    }
+
+    const result = await sequelize.query(
+      `EXEC psp_list_products_by_category @category_id = :category`,
+      {
+        replacements: {
+          category: categoryResult.category_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
     res.status(200).json({ data: result });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Se produjo un error" });
   }
 };
