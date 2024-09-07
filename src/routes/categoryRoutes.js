@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   listCategories,
+  listCategoriesExtended,
   getCategory,
   createCategory,
   updateCategory,
@@ -14,6 +15,13 @@ import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 const router = Router();
 
 router.get("/categories", authMiddleware, listCategories);
+
+router.get(
+  "/categories/extended",
+  authMiddleware,
+  adminMiddleware,
+  listCategoriesExtended
+);
 
 router.get("/categories/:id", authMiddleware, getCategory);
 

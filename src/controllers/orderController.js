@@ -75,7 +75,6 @@ export const createOrderWithDetails = async (req, res) => {
 
     res.status(200).json({ message: "Pedido creado exitosamente" });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Se produjo un error" });
   }
 };

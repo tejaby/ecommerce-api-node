@@ -12,6 +12,18 @@ export const listCategories = async (req, res) => {
   }
 };
 
+export const listCategoriesExtended = async (req, res) => {
+  try {
+    const result = await sequelize.query(`EXEC csp_list_categories_with_details`, {
+      type: sequelize.QueryTypes.SELECT,
+    });
+
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
 export const getCategory = async (req, res) => {
   const { id } = req.params;
 

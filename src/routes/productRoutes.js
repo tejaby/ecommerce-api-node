@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import {
   listProducts,
+  listProductsExtended,
   getProduct,
   createproduct,
   updateProduct,
@@ -14,6 +15,8 @@ import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 const router = Router();
 
 router.get("/products", authMiddleware, listProducts);
+
+router.get("/products/extended", authMiddleware, adminMiddleware, listProductsExtended);
 
 router.get("/products/:id", authMiddleware, getProduct);
 

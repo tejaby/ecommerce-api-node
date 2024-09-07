@@ -123,7 +123,6 @@ export const register = async (req, res) => {
 
     res.status(200).json({ ...result, token });
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "Se produjo un error" });
   }
 };

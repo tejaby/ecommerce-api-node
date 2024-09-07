@@ -38,7 +38,20 @@ export const listProducts = async (req, res) => {
     );
     res.status(200).json({ data: result });
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
+export const listProductsExtended = async (req, res) => {
+  try {
+    const result = await sequelize.query(
+      `EXEC psp_list_products_with_details`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.status(200).json({ data: result });
+  } catch (err) {
     res.status(500).json({ error: "Se produjo un error" });
   }
 };
