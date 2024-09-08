@@ -2,7 +2,9 @@ import { Router } from "express";
 
 import {
   listOrders,
+  listOrdersUser,
   listdetailOrders,
+  listdetailOrdersUser,
   createOrderWithDetails,
   updateOrderHeader,
   updateOrderStatus,
@@ -15,12 +17,16 @@ const router = Router();
 
 router.get("/orders", authMiddleware, adminMiddleware, listOrders);
 
+router.get("/orders/user", authMiddleware, listOrdersUser);
+
 router.get(
   "/orders/:id/details",
   authMiddleware,
   adminMiddleware,
   listdetailOrders
 );
+
+router.get("/orders/:id/details/user", authMiddleware, listdetailOrdersUser);
 
 router.post("/orders", authMiddleware, createOrderWithDetails);
 

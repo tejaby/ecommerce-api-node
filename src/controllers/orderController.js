@@ -11,6 +11,24 @@ export const listOrders = async (req, res) => {
   }
 };
 
+export const listOrdersUser = async (req, res) => {
+  try {
+    const { user_id } = req.user;
+    const result = await sequelize.query(
+      `EXEC usp_list_user_order @user_id = :id`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          id: user_id,
+        },
+      }
+    );
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
 export const listdetailOrders = async (req, res) => {
   const { id } = req.params;
   try {
@@ -36,6 +54,24 @@ export const listdetailOrders = async (req, res) => {
           id,
         },
         type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
+export const listdetailOrdersUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await sequelize.query(
+      `EXEC usp_list_user_order_details @order_id = :order_id`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          order_id: id,
+        },
       }
     );
     res.status(200).json({ data: result });
