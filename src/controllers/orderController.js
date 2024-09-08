@@ -1,5 +1,49 @@
 import sequelize from "../db.js";
 
+export const listOrders = async (req, res) => {
+  try {
+    const result = await sequelize.query(`EXEC usp_list_orders_with_details`, {
+      type: sequelize.QueryTypes.SELECT,
+    });
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
+export const listdetailOrders = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [order] = await sequelize.query(
+      `EXEC usp_get_orders @order_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!order) {
+      res.status(404).json({ error: "No se encontró el pedido" });
+      return;
+    }
+
+    const result = await sequelize.query(
+      `EXEC usp_list_order_details_with_details @order_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
 export const createOrderWithDetails = async (req, res) => {
   const { user_id } = req.user;
   const { address, phone_number, total_amount, order_details, state_id } =
