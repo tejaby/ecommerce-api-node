@@ -126,7 +126,7 @@ export const createproduct = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    const [result] = await sequelize.query(
       `EXEC psp_ins_products @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image, @user_id = :user_id, @category_id = :category_id, @state_id = :state_id`,
       {
         replacements: {
@@ -144,7 +144,9 @@ export const createproduct = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `Producto creado exitosamente` });
+    res
+      .status(200)
+      .json({ message: `Producto creado exitosamente`, data: result[0] });
   } catch (err) {
     res.status(500).json({ error: "Se produjo un error" });
   }
@@ -173,7 +175,7 @@ export const updateProduct = async (req, res) => {
       }
     );
 
-    if (product) {
+    if (product && product.product_id != id) {
       res.status(400).json({ error: "El producto ya existe" });
       return;
     }
@@ -193,7 +195,7 @@ export const updateProduct = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    await sequelize.query(
       `EXEC psp_upd_products @product_id = :id, @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image`,
       {
         replacements: {
@@ -236,7 +238,7 @@ export const updateProductState = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    await sequelize.query(
       `EXEC psp_upd_product_status @product_id = :id, @state_id = :state_id`,
       {
         replacements: {
@@ -247,7 +249,7 @@ export const updateProductState = async (req, res) => {
       }
     );
 
-    res.status(200).json({ message: `Producto desactivado exitosamente` });
+    res.status(200).json({ message: `Estado actualizado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "Se produjo un error" });
   }

@@ -14,9 +14,12 @@ export const listCategories = async (req, res) => {
 
 export const listCategoriesExtended = async (req, res) => {
   try {
-    const result = await sequelize.query(`EXEC csp_list_categories_with_details`, {
-      type: sequelize.QueryTypes.SELECT,
-    });
+    const result = await sequelize.query(
+      `EXEC csp_list_categories_with_details`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
 
     res.status(200).json({ data: result });
   } catch (err) {
@@ -69,7 +72,7 @@ export const createCategory = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    const [result] = await sequelize.query(
       `EXEC csp_ins_categories @name = :name, @user_id = :user_id, @state_id = :state_id`,
       {
         replacements: {
@@ -81,7 +84,7 @@ export const createCategory = async (req, res) => {
       }
     );
 
-    res.json({ message: `Categoría creada exitosamente` });
+    res.json({ message: `Categoría creada exitosamente`, data: result[0] });
   } catch (err) {
     res.status(500).json({ error: "Se produjo un error" });
   }
@@ -102,7 +105,7 @@ export const updateCategory = async (req, res) => {
       }
     );
 
-    if (category) {
+    if (category && category.category_id != id) {
       res.status(400).json({ error: "La categoría ya existe" });
       return;
     }
@@ -122,7 +125,7 @@ export const updateCategory = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    await sequelize.query(
       `EXEC csp_upd_categories @category_id = :id, @name = :name`,
       {
         replacements: {
@@ -164,7 +167,26 @@ export const updateCategoryState = async (req, res) => {
       return;
     }
 
-    const result = await sequelize.query(
+    if (state_id === 2) {
+      const products = await sequelize.query(
+        `EXEC psp_list_products_by_category @category_id = :id`,
+        {
+          replacements: {
+            id,
+          },
+          type: sequelize.QueryTypes.SELECT,
+        }
+      );
+
+      if (products.length > 0) {
+        res
+          .status(400)
+          .json({ error: "La categoría no puede ser desactivada" });
+        return;
+      }
+    }
+
+    await sequelize.query(
       `EXEC csp_upd_categorie_status @category_id = :id, @state_id = :state_id`,
       {
         replacements: {
@@ -175,7 +197,7 @@ export const updateCategoryState = async (req, res) => {
       }
     );
 
-    res.json({ message: `Categoría desactivada exitosamente` });
+    res.json({ message: `Estado actualizado exitosamente` });
   } catch (err) {
     res.status(500).json({ error: "Se produjo un error" });
   }
