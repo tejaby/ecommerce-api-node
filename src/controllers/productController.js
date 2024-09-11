@@ -1,4 +1,5 @@
 import sequelize from "../db.js";
+import { uploadImage } from "../utils/cloudinary.js";
 
 export const listProducts = async (req, res) => {
   const { category } = req.query;
@@ -126,6 +127,13 @@ export const createproduct = async (req, res) => {
       return;
     }
 
+    let imageUrl = null;
+
+    if (req.files?.image) {
+      const result = await uploadImage(req.files.image.tempFilePath);
+      imageUrl = result.url;
+    }
+
     const [result] = await sequelize.query(
       `EXEC psp_ins_products @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image, @user_id = :user_id, @category_id = :category_id, @state_id = :state_id`,
       {
@@ -135,7 +143,7 @@ export const createproduct = async (req, res) => {
           brand,
           price,
           stock,
-          image,
+          image: imageUrl,
           user_id,
           category_id,
           state_id,
@@ -195,6 +203,13 @@ export const updateProduct = async (req, res) => {
       return;
     }
 
+    let imageUrl = null;
+
+    if (req.files?.image) {
+      const result = await uploadImage(req.files.image.tempFilePath);
+      imageUrl = result.url;
+    }
+
     await sequelize.query(
       `EXEC psp_upd_products @product_id = :id, @name = :name, @description = :description, @brand = :brand, @price = :price, @stock = :stock, @image = :image`,
       {
@@ -205,7 +220,7 @@ export const updateProduct = async (req, res) => {
           brand,
           price,
           stock,
-          image,
+          image: imageUrl,
         },
         type: sequelize.QueryTypes.RAW,
       }
