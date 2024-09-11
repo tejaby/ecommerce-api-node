@@ -11,3 +11,7 @@ export const DB_USERNAME = process.env.DB_USERNAME;
 export const DB_PASSWORD = process.env.DB_PASSWORD;
 
 export const JWT_SECRET = process.env.JWT_SECRET;
+
+export const CLOUD_NAME = process.env.CLOUD_NAME;
+export const API_KEY = process.env.API_KEY;
+export const API_SECRET = process.env.API_SECRET;
