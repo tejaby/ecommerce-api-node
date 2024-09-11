@@ -37,7 +37,16 @@ router.post(
   createproduct
 );
 
-router.put("/products/:id", authMiddleware, adminMiddleware, updateProduct);
+router.put(
+  "/products/:id",
+  authMiddleware,
+  adminMiddleware,
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "./uploads",
+  }),
+  updateProduct
+);
 
 router.put(
   "/products/:id/state",
