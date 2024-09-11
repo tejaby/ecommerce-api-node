@@ -8,6 +8,7 @@ import {
   createOrderWithDetails,
   updateOrderHeader,
   updateOrderStatus,
+  updateOrderAdminStatus,
 } from "../controllers/orderController.js";
 
 import { authMiddleware } from "../middlewares/auth.js";
@@ -33,5 +34,12 @@ router.post("/orders", authMiddleware, createOrderWithDetails);
 router.put("/orders/:id", authMiddleware, updateOrderHeader);
 
 router.put("/orders/:id/state", authMiddleware, updateOrderStatus);
+
+router.put(
+  "/orders/:id/state/admin",
+  authMiddleware,
+  adminMiddleware,
+  updateOrderAdminStatus
+);
 
 export default router;

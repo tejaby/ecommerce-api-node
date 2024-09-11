@@ -269,3 +269,60 @@ export const updateOrderStatus = async (req, res) => {
     res.status(500).json({ error: "Se produjo un error" });
   }
 };
+
+export const updateOrderAdminStatus = async (req, res) => {
+  const { id } = req.params;
+  const { state_id } = req.body;
+
+  if (!state_id) {
+    res.status(400).json({ error: "Falta el estado" });
+    return;
+  }
+
+  try {
+    const [order] = await sequelize.query(
+      `EXEC usp_get_orders @order_id = :id`,
+      {
+        replacements: {
+          id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!order) {
+      res.status(404).json({ error: "No se encontró el pedido" });
+      return;
+    }
+
+    const [state] = await sequelize.query(
+      `EXEC ssp_get_states @state_id = :state_id`,
+      {
+        replacements: {
+          state_id,
+        },
+        type: sequelize.QueryTypes.SELECT,
+      }
+    );
+
+    if (!state) {
+      res.status(400).json({ error: "El estado no existe" });
+      return;
+    }
+
+    const result = await sequelize.query(
+      `EXEC usp_upd_orders @state_id = :state_id, @order_id = :id`,
+      {
+        replacements: {
+          state_id,
+          id,
+        },
+        type: sequelize.QueryTypes.RAW,
+      }
+    );
+
+    res.status(200).json({ message: "Pedido actualizado exitosamente" });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
