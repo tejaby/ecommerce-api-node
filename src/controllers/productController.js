@@ -57,6 +57,25 @@ export const listProductsExtended = async (req, res) => {
   }
 };
 
+export const listProductsbyName = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    const result = await sequelize.query(
+      `EXEC psp_list_products_by_name @name = :name`,
+      {
+        type: sequelize.QueryTypes.SELECT,
+        replacements: {
+          name,
+        },
+      }
+    );
+    res.status(200).json({ message: "Productos encontrados", data: result });
+  } catch (err) {
+    res.status(500).json({ error: "Se produjo un error" });
+  }
+};
+
 export const getProduct = async (req, res) => {
   const { id } = req.params;
 

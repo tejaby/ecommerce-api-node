@@ -4,6 +4,7 @@ import fileUpload from "express-fileupload";
 import {
   listProducts,
   listProductsExtended,
+  listProductsbyName,
   getProduct,
   createproduct,
   updateProduct,
@@ -23,6 +24,8 @@ router.get(
   adminMiddleware,
   listProductsExtended
 );
+
+router.get("/products/:name/search", authMiddleware, listProductsbyName);
 
 router.get("/products/:id", authMiddleware, getProduct);
 
